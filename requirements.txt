@@ -1,0 +1,5 @@
+ultralytics
+opencv-python
+numpy
+paho-mqtt>=2.0
+python run.py --roi "0.2,0.2;0.8,0.2;0.8,0.8;0.2,0.8" --source 0 --show
