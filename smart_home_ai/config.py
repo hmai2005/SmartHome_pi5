@@ -142,7 +142,7 @@ class MqttConfig:
     # Client ID của chương trình AI.
     client_id: str = "smart-home-ai-controller"
     # Tài khoản HiveMQ Cloud dùng để xác thực kết nối.
-    username: Optional[str] = "Hien Mai"
+    username: Optional[str] = "SmartHomeApp"
     password: Optional[str] = "12345678"
     # Gửi ping để giữ kết nối MQTT.
     keepalive_s: int = 60  #60s
@@ -168,6 +168,8 @@ class MqttConfig:
     # ----------------------------
     led_state_topic: str = "smart-home/led/state"
     servo_retracted_topic: str = "smart-home/servo/retracted"
+    # AI -> ESP32: số người ổn định từ camera.
+    person_count_topic: str = "smart-home/ai/person_count"
     # ========================================================
     # MQTT DELIVERY
     # ========================================================

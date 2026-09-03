@@ -131,6 +131,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default="smart-home/servo/retracted",
         help="ESP32 servo state topic.",
     )
+    mqtt.add_argument(
+        "--mqtt-person-count-topic",
+        default="smart-home/ai/person_count",
+        help="Python AI -> ESP32 stable camera person count.",
+    )
     # ========================================================
     # MQTT DELIVERY
     # ========================================================

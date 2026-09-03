@@ -340,6 +340,10 @@ def build_mqtt_config(
             args.mqtt_servo_retracted_topic
         ),
 
+        person_count_topic=(
+            args.mqtt_person_count_topic
+        ),
+
 
         # ----------------------------------------------------
         # MQTT DELIVERY

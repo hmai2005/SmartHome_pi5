@@ -31,6 +31,7 @@ class ApplicationComponents:
     temperature_reader: TemperatureReader
     actuator: MqttFanActuator
     gateway: MqttGateway
+    last_published_people: Optional[int] = None
 
 
 def get_frame_shape(frame: np.ndarray) -> FrameShape:
@@ -78,6 +79,18 @@ def process_frame(
         now=now,
         frame_shape=get_frame_shape(frame),
     )
+
+    # Publish only on change; retain keeps the latest count available to ESP32.
+    if stable_people != components.last_published_people:
+        components.gateway.publish_json(
+            components.gateway.config.person_count_topic,
+            {
+                "schema": 1,
+                "count": stable_people,
+            },
+            retain=True,
+        )
+        components.last_published_people = stable_people
 
     # 4. TEMPERATURE
     temperature_c = components.temperature_reader.read_celsius()

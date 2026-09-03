@@ -14,6 +14,7 @@ const char* MQTT_PASSWORD = nullptr;
 const char* COMMAND_TOPIC = "smart-home/fan/command";
 const char* STATE_TOPIC = "smart-home/fan/state";
 const char* AVAILABILITY_TOPIC = "smart-home/fan/availability";
+const char* PERSON_COUNT_TOPIC = "smart-home/ai/person_count";
 
 // ===================== PHẦN CỨNG QUẠT 3 CẤP =====================
 // Ví dụ điều khiển ba relay. Chỉnh chân theo mạch thực tế.
@@ -33,6 +34,7 @@ WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
 int currentFanLevel = 0;
+int currentPersonCount = 0;
 uint32_t lastCommandId = 0;
 uint32_t lastCommandReceivedMs = 0;
 
@@ -118,9 +120,26 @@ void handleFanCommand(const byte* payload, unsigned int length) {
   publishFanState(commandId);
 }
 
+void handlePersonCount(const byte* payload, unsigned int length) {
+  StaticJsonDocument<96> document;
+  DeserializationError error = deserializeJson(document, payload, length);
+
+  if (error || document["schema"] != 1 || !document["count"].is<int>()) {
+    return;
+  }
+
+  int count = document["count"].as<int>();
+  if (count >= 0) {
+    currentPersonCount = count;
+  }
+}
+
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
   if (strcmp(topic, COMMAND_TOPIC) == 0) {
     handleFanCommand(payload, length);
+  }
+  if (strcmp(topic, PERSON_COUNT_TOPIC) == 0) {
+    handlePersonCount(payload, length);
   }
 }
 
@@ -163,6 +182,7 @@ void connectMqtt() {
 
     if (connected) {
       mqttClient.subscribe(COMMAND_TOPIC, 1);
+      mqttClient.subscribe(PERSON_COUNT_TOPIC, 1);
       publishAvailability("online");
       publishFanState(lastCommandId);
     } else {
